@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import { heroWatchers, lifecycleHooks, logger, ourHeroes } from "../shared";
+import { data, heroWatchers, lifecycleHooks } from "../shared";
 import HeroDetail from "@/components/hero-detail";
 
 export default {
@@ -54,20 +54,14 @@ export default {
   },
   components: { HeroDetail },
   mixins: [heroWatchers, lifecycleHooks],
-  created() {
-    this.loadHeroes();
-    logger.info(`${this.componentName} created hook called`);
+  async created() {
+    await this.loadHeroes();
   },
   methods: {
-    async getHeroes() {
-      return new Promise(resolve => {
-        setTimeout(() => resolve(ourHeroes), 1500);
-      });
-    },
     async loadHeroes() {
       this.heroes = [];
       this.message = "getting the heroes, please be patient";
-      this.heroes = await this.getHeroes();
+      this.heroes = await data.getHeroes();
       this.message = "";
     },
     cancelHero() {
