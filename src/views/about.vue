@@ -14,16 +14,9 @@
         <a
           href="https://github.com/johnpapa/vue-getting-started"
           target="_blank"
-          >github.com/johnpapa/vue-getting-started</a
-        >
+        >github.com/johnpapa/vue-getting-started</a>
       </p>
       <br />
     </div>
   </div>
 </template>
-
-<script>
-export default {};
-</script>
-
-<style lang="scss"></style>
