@@ -1,18 +1,14 @@
-import * as axios from 'axios';
+import * as axios from "axios";
+import { API } from "./config";
 
-import { format, parse } from 'date-fns';
-import { inputDateFormat } from './constants';
-
-import { API } from './config';
-
-const getHeroes = async function () {
+const getHeroes = async function() {
   try {
     const response = await axios.get(`${API}/heroes`);
 
     let data = parseList(response);
 
     const heroes = data.map(h => {
-      h.originDate = format(parse(h.originDate, "MM/dd/yyyy", new Date()), inputDateFormat);
+      h.fullName = `${h.firstName} ${h.lastName}`;
       return h;
     });
     return heroes;
@@ -22,10 +18,11 @@ const getHeroes = async function () {
   }
 };
 
-const getHero = async function (id) {
+const getHero = async function(id) {
   try {
     const response = await axios.get(`${API}/heroes/${id}`);
     let hero = parseItem(response, 200);
+    hero.fullName = `${hero.firstName} ${hero.lastName}`;
     return hero;
   } catch (error) {
     console.error(error);
@@ -33,7 +30,7 @@ const getHero = async function (id) {
   }
 };
 
-const updateHero = async function (hero) {
+const updateHero = async function(hero) {
   try {
     const response = await axios.put(`${API}/heroes/${hero.id}`, hero);
     const updatedHero = parseItem(response, 200);
@@ -44,7 +41,7 @@ const updateHero = async function (hero) {
   }
 };
 
-const getVillains = async function () {
+const getVillains = async function() {
   try {
     const response = await axios.get(`${API}/villains`);
     let villains = parseList(response);
@@ -55,7 +52,7 @@ const getVillains = async function () {
   }
 };
 
-const getVillain = async function (id) {
+const getVillain = async function(id) {
   try {
     const response = await axios.get(`${API}/villains/${id}`);
     let villain = parseItem(response, 200);
@@ -66,7 +63,7 @@ const getVillain = async function (id) {
   }
 };
 
-const updateVillain = async function (villain) {
+const updateVillain = async function(villain) {
   try {
     const response = await axios.put(`${API}/villains/${villain.id}`, villain);
     const updatedVillain = parseItem(response, 200);
@@ -77,11 +74,33 @@ const updateVillain = async function (villain) {
   }
 };
 
+const addHero = async function(hero) {
+  try {
+    const response = await axios.post(`${API}/heroes`, hero);
+    const addedHero = parseItem(response, 201);
+    return addedHero;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+const deleteHero = async function(hero) {
+  try {
+    const response = await axios.delete(`${API}/heroes/${hero.id}`);
+    parseItem(response, 200);
+    return hero.id;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
 const parseList = response => {
   if (response.status !== 200) throw Error(response.message);
   if (!response.data) return [];
   let list = response.data;
-  if (typeof list !== 'object') {
+  if (typeof list !== "object") {
     list = [];
   }
   return list;
@@ -90,17 +109,19 @@ const parseList = response => {
 export const parseItem = (response, code) => {
   if (response.status !== code) throw Error(response.message);
   let item = response.data;
-  if (typeof item !== 'object') {
+  if (typeof item !== "object") {
     item = undefined;
   }
   return item;
 };
 
 export const dataService = {
+  addHero,
+  deleteHero,
   getHeroes,
   getHero,
   updateHero,
   getVillains,
   getVillain,
-  updateVillain,
+  updateVillain
 };
